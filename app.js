@@ -18,7 +18,7 @@ app.use(express.json());
 dotenv.config({path: "./env/.env"});
 
 // Para poder trabajar con las cookies
-//app.use(cookieParser)
+app.use(cookieParser())
 
 // Llamar al rputer
 app.use("/", require("./routes/router"));
