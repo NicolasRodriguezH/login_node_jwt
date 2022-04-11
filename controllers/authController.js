@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const conexion = require("../database/db")
-const {promisify} = require("util")
+const {promisify} = require("util");
+const { error } = require("console");
 
 // Procedimineto para registrarnos
 exports.register = async (req, res) => {
@@ -78,4 +79,27 @@ exports.login = async (req, res) => {
     } catch (error) {
         console.log(error);       
     }
+}
+
+exports.isAuthenticated = async (req, res, next) => {
+    if(req.cookies.jwt) {
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRETO)
+            conexion.query('SELECT * FROM users WHERE id = ?', [decoded.id], (error, results) => {
+                if (!results){return next()}
+                req.user = results[0]
+                return next()
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }else{
+        res.redirect('/login')
+    }
+}
+
+exports.logout = (req, res) => {
+    res.clearCookie('jwt')
+    return res.redirect('/')
 }
