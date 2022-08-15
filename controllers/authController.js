@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
             })
         }else{
             conexion.query("SELECT * FROM users WHERE user = ?", [user], async (error, results) => {
-                if( results.lenght == 0 || ! (await bcryptjs.compare(pass, results[0].pass)) ){
+                if( results.lenght == 0 || !(await bcryptjs.compare(pass, results[0].pass)) ){
                     res.render("login", {
                         alert:true,
                         alertTitle: "Error",
